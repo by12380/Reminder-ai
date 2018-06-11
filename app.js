@@ -1,15 +1,20 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var session = require("express-session");
+const passport = require('passport');
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+
 const { DATABASE_URL, PORT } = require('./config');
+const { useLocalStrategy } = require('./passport-config');
+
+const User = require('./models/user');
 
 var app = express();
 
@@ -20,8 +25,11 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({ secret: "reminder-app", resave: false, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -40,6 +48,20 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+//Initiate local strategy for use by Passport
+useLocalStrategy(passport);
+
+//Configure Passport authenticated session persistence.
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
+    done(err, user);
+  });
 });
 
 let server;
