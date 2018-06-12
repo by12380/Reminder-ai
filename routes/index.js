@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const passport = require('passport');
+const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -12,9 +13,13 @@ router.get('/login', function(req, res){
 })
 
 router.post('/login',  passport.authenticate('local', {
-  successRedirect: '/',
+  successRedirect: '/dashboard',
   failureRedirect: '/login',
   failureFlash: true
 }));
+
+router.get('/dashboard', ensureLoggedIn(), function(req, res){
+  res.render('dashboard.ejs');
+})
 
 module.exports = router;
