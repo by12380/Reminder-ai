@@ -18,6 +18,10 @@ router.post('/login',  passport.authenticate('local', {
   failureFlash: true
 }));
 
+router.get('/register', function(req, res){
+  res.render('register.ejs');
+})
+
 router.get('/dashboard', ensureLoggedIn(), function(req, res){
   res.render('dashboard.ejs');
 })

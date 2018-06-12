@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <%- include('shared-css'); -%>
+    <link rel="stylesheet" href="/stylesheets/register.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6 middle-col">
+                <!--Form without header-->
+                <div class="register-container">
+                    <!-- Material form register -->
+                    <form class="card">
+                        <div class="card-block">
+                            <p class="h4 text-center mb-4">Sign up</p>
+                
+                            <!-- Material input text -->
+                            <div class="md-form">
+                                <i class="fa fa-user prefix grey-text"></i>
+                                <input type="text" id="name" name="name" class="form-control" required>
+                                <label for="name">Your name</label>
+                            </div>
+                        
+                            <!-- Material input email -->
+                            <div class="md-form">
+                                <i class="fa fa-envelope prefix grey-text"></i>
+                                <input type="email" id="email" name="email" class="form-control" required>
+                                <label for="email">Your email</label>
+                            </div>
+                        
+                            <!-- Material input password -->
+                            <div class="md-form">
+                                <i class="fa fa-lock prefix grey-text"></i>
+                                <input type="password" id="password" name="password" class="form-control" required>
+                                <label for="passowrd">Your password</label>
+                            </div>
+
+                            <!-- Material input password -->
+                            <div class="md-form">
+                                <i class="fa fa-lock prefix grey-text"></i>
+                                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+                                <label for="confirmPassword">Confirm password</label>
+                            </div>
+                        
+                            <div class="text-center mt-4">
+                                <button class="btn btn-primary" type="submit">Register</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- Material form register -->
+                </div>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+    </div>
+    <%- include('shared-js'); -%>
+</body>
+</html>
