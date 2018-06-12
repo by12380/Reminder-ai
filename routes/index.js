@@ -12,15 +12,25 @@ router.get('/login', function(req, res){
   res.render('login.ejs', { errorMessage: req.flash('error') });
 })
 
-router.post('/login',  passport.authenticate('local', {
+router.post('/login',  passport.authenticate('local-login', {
   successRedirect: '/dashboard',
   failureRedirect: '/login',
   failureFlash: true
 }));
 
 router.get('/register', function(req, res){
-  res.render('register.ejs');
+  res.render('register.ejs', { errorMessage: req.flash('error') });
 })
+
+router.post('/register',
+  passport.authenticate(
+  'local-register',
+  {
+    successRedirect: '/dashboard',
+    failureRedirect: '/register',
+    failureFlash: true
+  })
+)
 
 router.get('/dashboard', ensureLoggedIn(), function(req, res){
   res.render('dashboard.ejs');

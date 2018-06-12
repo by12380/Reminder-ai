@@ -16,7 +16,7 @@
                 <!--Form without header-->
                 <div class="register-container">
                     <!-- Material form register -->
-                    <form class="card">
+                    <form class="card" action="/register" method="POST">
                         <div class="card-block">
                             <p class="h4 text-center mb-4">Sign up</p>
                 
@@ -47,6 +47,10 @@
                                 <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
                                 <label for="confirmPassword">Confirm password</label>
                             </div>
+
+                            <% if (errorMessage.length) { %>
+                                <p class="text-danger text-center error-msg"><%= errorMessage %></p>
+                            <% } %>
                         
                             <div class="text-center mt-4">
                                 <button class="btn btn-primary" type="submit">Register</button>
