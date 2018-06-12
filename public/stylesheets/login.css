@@ -1,0 +1,29 @@
+.middle-col {
+    position: relative;
+    height: 99vh;
+}
+
+.login-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 400px;
+}
+
+.login-container .card-block {
+    padding: 30px;
+    padding-bottom: 0px;
+}
+
+.submit-btn {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.error-msg {
+    margin: 0;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}

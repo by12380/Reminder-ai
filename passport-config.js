@@ -1,6 +1,8 @@
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 
+const errorMessage = 'Incorrect email or password.';
+
 const useLocalStrategy = function (passport) {
     passport.use(new LocalStrategy(
         {
@@ -10,10 +12,10 @@ const useLocalStrategy = function (passport) {
           User.findOne({ 'local.email': email }, function(err, user) {
             if (err) { return done(err); }
             if (!user) {
-              return done(null, false, { message: 'Incorrect email.' });
+              return done(null, false, { message: errorMessage });
             }
             if (!user.validPassword(password)) {
-              return done(null, false, { message: 'Incorrect password.' });
+              return done(null, false, { message: errorMessage });
             }
             return done(null, user);
           });
