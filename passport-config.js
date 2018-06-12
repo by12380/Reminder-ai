@@ -3,7 +3,7 @@ const User = require('./models/user');
 
 const errorMessage = 'Incorrect email or password.';
 
-const useLocalStrategy = function (passport) {
+const initLocalLoginInAndRegisterStrategies = function (passport) {
     passport.use(new LocalStrategy(
         {
             usernameField: 'email',
@@ -23,4 +23,4 @@ const useLocalStrategy = function (passport) {
     ));
 }
 
-module.exports = { useLocalStrategy };
+module.exports = { initLocalLoginInAndRegisterStrategies };

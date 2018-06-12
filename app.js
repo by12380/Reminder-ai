@@ -13,7 +13,7 @@ var usersRouter = require('./routes/users');
 
 
 const { DATABASE_URL, PORT } = require('./config');
-const { useLocalStrategy } = require('./passport-config');
+const { initLocalLoginInAndRegisterStrategies } = require('./passport-config');
 
 const User = require('./models/user');
 
@@ -53,7 +53,7 @@ app.use(function(err, req, res, next) {
 });
 
 //Initiate local strategy for use by Passport
-useLocalStrategy(passport);
+initLocalLoginInAndRegisterStrategies(passport);
 
 //Configure Passport authenticated session persistence.
 passport.serializeUser(function(user, done) {
