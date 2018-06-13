@@ -32,9 +32,14 @@ const initLocalLoginInAndRegisterStrategies = function (passport) {
           passReqToCallback : true
       },
       function(req, email, password, done) {
-        if (email) {
-          email = email.toLowerCase();
+        //Check if email is null
+        if (!email) {
+          return done(null, false, { message: 'Email is required' });
         }
+        if (!password) {
+          return done(null, false, { message: 'Password is required' });
+        }
+        email = email.toLowerCase();
         User.findOne({ 'local.email': email }, function(err, user) {
           if (err) { return done(err); }
           if (user) {
