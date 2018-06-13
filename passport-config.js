@@ -10,6 +10,9 @@ const initLocalLoginInAndRegisterStrategies = function (passport) {
             usernameField: 'email',
         },
         function(email, password, done) {
+          if (email) {
+            email = email.toLowerCase();
+          }
           User.findOne({ 'local.email': email }, function(err, user) {
             if (err) { return done(err); }
             if (!user) {
