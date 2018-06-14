@@ -6,6 +6,8 @@ var session = require("express-session");
 const flash = require('connect-flash');
 const passport = require('passport');
 const mongoose = require('mongoose');
+const fawn = require('fawn');
+
 mongoose.Promise = global.Promise;
 
 var indexRouter = require('./routes/index');
@@ -18,6 +20,8 @@ const { initLocalLoginInAndRegisterStrategies } = require('./passport-config');
 const { emailScheduler } = require('./emailScheduler');
 
 const User = require('./models/user');
+
+fawn.init(mongoose);
 
 var app = express();
 
