@@ -15,6 +15,7 @@ var reminderRouter = require('./routes/reminder');
 
 const { DATABASE_URL, PORT } = require('./config');
 const { initLocalLoginInAndRegisterStrategies } = require('./passport-config');
+const { emailScheduler } = require('./emailScheduler');
 
 const User = require('./models/user');
 
