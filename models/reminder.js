@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const moment = require('moment');
 
 const reminderSchema = mongoose.Schema({
     title: { type: String, required: true },
@@ -7,5 +8,28 @@ const reminderSchema = mongoose.Schema({
     memo: String,
     user_id: String
 })
+
+reminderSchema.methods.getPercentProgress = function(){
+    const dueDate = moment(this.dueDate);
+    const startDate = moment(this.startDate);
+    if (this.startDate) {
+        return moment().diff(startDate) * 100 / dueDate.diff(startDate);
+    }
+    if(moment().diff(dueDate) > 0){
+        return 100;
+    }
+    return 0;
+}
+
+reminderSchema.methods.serialize = function(){
+    return {
+        title: this.title,
+        dueDate: this.dueDate,
+        startDate: this.startDate,
+        memo: this.memo,
+        user_id: this.user_id,
+        percentProgress: this.getPercentProgress()
+    }
+}
 
 module.exports = mongoose.model('Reminder', reminderSchema);

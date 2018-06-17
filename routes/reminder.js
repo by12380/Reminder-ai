@@ -10,8 +10,10 @@ router.get('/', ensureLoggedIn(), function(req, res){
     Reminder
         .find({user_id: req.user.id})
         .sort({ dueDate: 1 })
-        .then( result => {
-            res.status(200).json(result);
+        .then( reminders => {
+            res.status(200).json(reminders.map((reminder) => {
+                return reminder.serialize();
+            }));
         })
         .catch( () => { res.status(500).json({ message: 'Internal server error' })})
 })
