@@ -6,6 +6,16 @@ const fawn = require('fawn');
 
 const router = express.Router();
 
+router.get('/', ensureLoggedIn(), function(req, res){
+    Reminder
+        .find({user_id: req.user.id})
+        .sort({ dueDate: 1 })
+        .then( result => {
+            res.status(200).json(result);
+        })
+        .catch( () => { res.status(500).json({ message: 'Internal server error' })})
+})
+
 router.post('/', ensureLoggedIn(), function(req, res){
 
     const task = fawn.Task();
@@ -37,7 +47,7 @@ function createScheduledEmails(reminder, req){
             scheduledDateTime: reminder.dueDate,
             subject: `Reminder: ${reminder.title}`,
             body: reminder.memo,
-            receiver: req.user.email,
+            receiver: req.user.local.email,
             reminder_id: reminder.id
         })
         scheduledEmails.push(scheduledEmail);

@@ -1,0 +1,17 @@
+.reminder-container {
+    width: 350px;
+    height: 80vh;
+    overflow: auto;
+}
+
+.date {
+    font-size: 13px;
+}
+
+.card-text {
+    margin-bottom: 2px;
+}
+
+#reminderForm {
+    width: 300px;
+}
