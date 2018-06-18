@@ -38,16 +38,29 @@ function renderRemindersPartialPage() {
 }
 
 function renderReminders(reminders) {
+    let cardBgColorClass;
+    let titleColorClass;
+    let dateColorClass;
+
     $('#reminder-container').html("");
 
     for (let reminder of reminders) {
+        if (reminder.percentProgress >= 90) {
+            cardBgColorClass = 'bg-danger';
+            titleColorClass = 'text-white';
+            dateColorClass = 'text-white';
+        } else {
+            cardBgColorClass = '';
+            titleColorClass = '';
+            dateColorClass = 'grey-text';
+        }
         $('#reminder-container').append(`
-            <div class="card m-3">
+            <div class="card m-3 ${cardBgColorClass}">
                 <!-- Card content -->
                 <div class="card-body">
                     <!-- Text -->
-                    <p class="mb-1">${reminder.title}</p>
-                    <p class="date grey-text m-0">${moment(reminder.dueDate).fromNow()}</p>
+                    <p class="mb-1 ${titleColorClass}">${reminder.title}</p>
+                    <p class="date m-0 ${dateColorClass}">${moment(reminder.dueDate).fromNow()}</p>
                 </div>
             </div>
         `);
