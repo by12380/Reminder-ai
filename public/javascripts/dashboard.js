@@ -38,7 +38,8 @@ function handelSubmitOnReminderForm() {
             dueDate: APP_DATA.addReminder.dueDate,
             startDate: APP_DATA.addReminder.startDate
         }, function(){
-            renderRemindersPartialPage();
+            //Refresh page
+            window.location = '/dashboard';
         })
     })
 }
