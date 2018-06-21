@@ -15,3 +15,7 @@
 #reminderForm {
     width: 300px;
 }
+
+.close-reminder {
+    margin-top: -10px;
+}
