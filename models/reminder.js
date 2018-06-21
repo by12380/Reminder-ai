@@ -23,11 +23,11 @@ reminderSchema.methods.getPercentProgress = function(){
 
 reminderSchema.methods.serialize = function(){
     return {
+        id: this.id,
         title: this.title,
         dueDate: this.dueDate,
         startDate: this.startDate,
         memo: this.memo,
-        user_id: this.user_id,
         percentProgress: this.getPercentProgress()
     }
 }
