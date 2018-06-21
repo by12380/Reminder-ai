@@ -44,15 +44,15 @@ function handelSubmitOnReminderForm() {
 }
 
 function renderRemindersPartialPage() {
-    let reminders;
-    clearInterval(APP_DATA.timeInterval);
-    $.getJSON('/reminder', function(result){
-        reminders = result;
+    $.getJSON('/reminder', function(reminders){
         renderReminders(reminders);
-        APP_DATA.timeInterval = setInterval(function(){
-            renderReminders(reminders);
-        }, 60000)
     })
+    clearInterval(APP_DATA.timeInterval);
+    APP_DATA.timeInterval = setInterval(function(){
+        $.getJSON('/reminder', function(reminders){
+            renderReminders(reminders);
+        })
+    }, 60000)
 }
 
 function renderReminders(reminders) {
