@@ -12,20 +12,60 @@
 <body>
     <%- include('shared-header') %>
     <div class="container-fluid">
-        <div id="reminder-container" class="reminder-container float-right m-2">
-        </div>
-        <form id="reminderForm" action="" method="post">
-            <input type="text" name="title" id="title" name="title" required>
-            <div class="form-group">
-                <div class="input-group date" id="datetimepicker" data-target-input="nearest">
-                    <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker" required/>
-                    <div class="input-group-append" data-target="#datetimepicker" data-toggle="datetimepicker">
-                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                    </div>
+        <div id="reminder-container" class="reminder-container float-right m-2"></div>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalReminderForm">
+            Add Reminder
+        </button>
+    </div>
+    <div class="modal fade" id="modalReminderForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <!--Modal: Contact form-->
+        <div class="modal-dialog cascading-modal" role="document">
+            <!--Content-->
+            <div class="modal-content">
+                <!--Header-->
+                <div class="modal-header primary-color white-text">
+                    <h4 class="title">
+                        <i class="fa fa-pencil"></i>Add Reminder
+                    </h4>
+                    <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <!--Body-->
+                <div class="modal-body">
+                    <form id="addReminderForm" action="/reminder" method="post">
+                        <div class="md-form form-sm">
+                            <i class="fa fa-tag prefix"></i>
+                            <input type="text" id="title" class="form-control form-control-sm" required>
+                            <label for="title">Title</label>
+                        </div>
+                        <div class="md-form form-sm">
+                            <i class="fa fa-bell prefix"></i>
+                            <input type="text" class="form-control form-control-sm datetimepicker-input" id="dueDate" name="dueDate" data-toggle="datetimepicker" data-target="#dueDate" required/>
+                            <label for="dueDate">Due date</label>
+                        </div>
+                        <div class="md-form form-sm">
+                            <i class="fa fa-clock-o prefix"></i>
+                            <input type="text" class="form-control form-control-sm datetimepicker-input" id="startDate" name="startDate" data-toggle="datetimepicker" data-target="#startDate"/>
+                            <label for="startDate">Start date</label>
+                        </div>
+                        <!-- Material textarea message -->
+                        <div class="md-form form-sm">
+                            <i class="fa fa-pencil prefix"></i>
+                            <textarea type="text" id="memo" class="md-textarea form-control"></textarea>
+                            <label for="memo">Memo</label>
+                        </div>
+                        <div class="text-center mt-4 mb-2">
+                            <button class="btn btn-primary">Add
+                                <i class="fa fa-send ml-2"></i>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <button type="submit">submit</button>
-        </form>
+            <!--/.Content-->
+        </div>
+        <!--/Modal: Contact form-->
     </div>
 
     <%- include('shared-js') %>

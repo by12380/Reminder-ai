@@ -1,23 +1,42 @@
 const APP_DATA = {
-    pickedDate: null,
+    addReminder: {
+        dueDate: null,
+        startDate: null
+    },
     timeInterval: null
 }
 
-//Initaiize datetimepicker
-$('#datetimepicker').datetimepicker();
+function initializeDateTimePicker() {
+    $('#dueDate').datetimepicker();
+
+    $('#startDate').datetimepicker({
+        buttons: {
+            showClear: true,
+        },
+        icons: {
+            clear: 'fa fa-trash-o'
+        }
+    });
+}
 
 function handleChangeOnDateTimePicker() {
-    $("#datetimepicker").on("change.datetimepicker", function (e) {
-        APP_DATA.pickedDate = e.date._d;
+    $("#dueDate").on("change.datetimepicker", function (e) {
+        APP_DATA.addReminder.dueDate = e.date._d;
+        console.log(APP_DATA.addReminder.dueDate);
+    });
+    $("#startDate").on("change.datetimepicker", function (e) {
+        APP_DATA.addReminder.startDate = e.date._d;
+        console.log(APP_DATA.addReminder.startDate);
     });
 }
 
 function handelSubmitOnReminderForm() {
-    $('#reminderForm').submit(function(e){
+    $('#addReminderForm').submit(function(e){
         e.preventDefault();
         $.post('/reminder', {
             title: $('#title').val(),
-            dueDate: APP_DATA.pickedDate
+            dueDate: APP_DATA.addReminder.dueDate,
+            startDate: APP_DATA.addReminder.startDate
         }, function(){
             renderRemindersPartialPage();
         })
@@ -26,7 +45,7 @@ function handelSubmitOnReminderForm() {
 
 function renderRemindersPartialPage() {
     let reminders;
-    if (APP_DATA.timeInterval) APP_DATA.timeInterval.clearInterval();
+    clearInterval(APP_DATA.timeInterval);
     $.getJSON('/reminder', function(result){
         reminders = result;
         renderReminders(reminders);
@@ -34,7 +53,6 @@ function renderRemindersPartialPage() {
             renderReminders(reminders);
         }, 60000)
     })
-
 }
 
 function renderReminders(reminders) {
@@ -68,6 +86,7 @@ function renderReminders(reminders) {
 }
 
 function initializeDashboard() {
+    initializeDateTimePicker();
     handleChangeOnDateTimePicker();
     handelSubmitOnReminderForm();
     renderRemindersPartialPage();
