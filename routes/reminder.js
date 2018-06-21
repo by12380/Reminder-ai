@@ -42,6 +42,24 @@ router.post('/', ensureLoggedIn(), function(req, res){
 
 })
 
+router.delete('/:id', ensureLoggedIn(), async function(req, res){
+    const reminder = await Reminder.findById(req.params.id);
+
+    if (!reminder) {
+        res.status(404).json({ message: `Item with id: ${req.params._id} not found` });
+    }
+
+    const task = fawn.Task();
+    task.remove("reminders", {_id: reminder._id});
+    task.remove("scheduledemails", {reminder_id: req.params.id});
+    task
+    .run()
+    .then(() => { res.status(204).end() })
+    .catch(err => {
+        res.status(500).json({ message: 'Internal server error' });
+    });
+})
+
 function createScheduledEmails(reminder, req){
     const scheduledEmails = [];
     if(!reminder.startDate){
