@@ -2,13 +2,14 @@ const schedule = require('node-schedule');
 const { transporter } = require('./email-config');
 const { GMAIL_USERNAME } = require('./config');
 
-const emailScheduler = {
-    add: function(id, scheduledDateTime, subject, body, receiver, sender = GMAIL_USERNAME, smtpClient = transporter) {
+const notificationScheduler = {
+    add: function(id, scheduledDateTime, title, body, receiverEmail, hostEmail = GMAIL_USERNAME, smtpClient = transporter) {
         schedule.scheduleJob(id, scheduledDateTime, function(){
+            //Schedule email delivery
             smtpClient.sendMail({
-                from: sender,
-                to: receiver,
-                subject: subject,
+                from: hostEmail,
+                to: receiverEmail,
+                subject: title,
                 html: body
             }, function (err, info) {
                 if(err)
@@ -16,14 +17,16 @@ const emailScheduler = {
                 else
                   console.log(info);
             })
+
+            //TODO: Cancel schedule upon job completion
         });
         console.log(`Added schedule: ${id}`);
     },
-    addAll: function(scheduledEmails){
-        for (let scheduledEmail of scheduledEmails){
+    addAll: function(notifications){
+        for (let notification of notifications){
             this.add(
-                scheduledEmail.id, scheduledEmail.scheduledDateTime, scheduledEmail.subject,
-                scheduledEmail.body, scheduledEmail.receiver
+                notification.id, notification.scheduledDateTime, notification.title,
+                notification.body, notification.userEmail
             );
         }
     },
@@ -37,4 +40,4 @@ const emailScheduler = {
     }
 }
 
-module.exports = { emailScheduler };
+module.exports = { notificationScheduler };

@@ -1,9 +1,9 @@
 const express = require('express');
 const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
 const Reminder = require('../models/reminder');
-const ScheduledEmail = require('../models/scheduled-email');
+const Notification = require('../models/notifications');
 const fawn = require('fawn');
-const { emailScheduler } = require('../emailScheduler');
+const { notificationScheduler } = require('../notificationScheduler');
 
 const router = express.Router();
 
@@ -29,20 +29,20 @@ router.post('/', ensureLoggedIn(), function(req, res){
         memo: req.body.memo,
         user_id: req.user.id
     });
-    const scheduledEmails = createScheduledEmails(reminder, req);
+    const notifications = createNotifications(reminder, req);
 
     task.save('reminders', reminder);
-    for (let scheduledEmail of scheduledEmails) {
-        task.save('scheduledemails', scheduledEmail);
+    for (let notification of notifications) {
+        task.save('notifications', notification);
     }
 
     task
     .run()
     .then(() => {
-        for (let scheduledEmail of scheduledEmails){
-            emailScheduler.add(
-                scheduledEmail.id, scheduledEmail.scheduledDateTime, scheduledEmail.subject,
-                scheduledEmail.body, scheduledEmail.receiver
+        for (let notification of notifications){
+            notificationScheduler.add(
+                notification.id, notification.scheduledDateTime, notification.title,
+                notification.body, notification.userEmail
             );
         }
         res.status(201).json(reminder)
@@ -55,7 +55,7 @@ router.post('/', ensureLoggedIn(), function(req, res){
 
 router.put('/:id', ensureLoggedIn(), async function(req, res){
     const reminder = await Reminder.findById(req.params.id);
-    const scheduledEmails = await ScheduledEmail.find({reminder_id: req.params.id});
+    const notifications = await Notification.find({reminder_id: req.params.id});
 
     if (!reminder) {
         res.status(404).json({ message: `Item with id: ${req.params._id} not found` });
@@ -68,27 +68,27 @@ router.put('/:id', ensureLoggedIn(), async function(req, res){
         memo: req.body.memo,
         user_id: req.user.id
     });
-    const newScheduledEmails = createScheduledEmails(newReminder, req);
+    const newNotifications = createNotifications(newReminder, req);
 
     const task = fawn.Task();
     //Remove old reminder and associated scheduled emails
     task.remove("reminders", {_id: reminder._id});
-    task.remove("scheduledemails", {reminder_id: req.params.id});
+    task.remove("notifications", {reminder_id: req.params.id});
     //Create new reminder and assicuated scheduled emails
     task.save('reminders', newReminder);
-    for (let scheduledEmail of newScheduledEmails) {
-        task.save('scheduledemails', scheduledEmail);
+    for (let notification of newNotifications) {
+        task.save('notifications', notification);
     }
     task
     .run()
     .then(() => {
-        for (let scheduledemail of scheduledEmails){
-            emailScheduler.remove(scheduledemail.id);
+        for (let notification of notifications){
+            notificationScheduler.remove(notification.id);
         }
-        for (let scheduledEmail of newScheduledEmails){
-            emailScheduler.add(
-                scheduledEmail.id, scheduledEmail.scheduledDateTime, scheduledEmail.subject,
-                scheduledEmail.body, scheduledEmail.receiver
+        for (let notification of newNotifications){
+            notificationScheduler.add(
+                notification.id, notification.scheduledDateTime, notification.title,
+                notification.body, notification.userEmail
             );
         }
         res.status(204).end()
@@ -100,7 +100,7 @@ router.put('/:id', ensureLoggedIn(), async function(req, res){
 
 router.delete('/:id', ensureLoggedIn(), async function(req, res){
     const reminder = await Reminder.findById(req.params.id);
-    const scheduledEmails = await ScheduledEmail.find({reminder_id: req.params.id});
+    const notifications = await Notification.find({reminder_id: req.params.id});
 
     if (!reminder) {
         res.status(404).json({ message: `Item with id: ${req.params._id} not found` });
@@ -108,12 +108,12 @@ router.delete('/:id', ensureLoggedIn(), async function(req, res){
 
     const task = fawn.Task();
     task.remove("reminders", {_id: reminder._id});
-    task.remove("scheduledemails", {reminder_id: req.params.id});
+    task.remove("notifications", {reminder_id: req.params.id});
     task
     .run()
     .then(() => {
-        for (let scheduledemail of scheduledEmails){
-            emailScheduler.remove(scheduledemail.id);
+        for (let notification of notifications){
+            notificationScheduler.remove(notification.id);
         }
         res.status(204).end();
     })
@@ -122,19 +122,19 @@ router.delete('/:id', ensureLoggedIn(), async function(req, res){
     });
 })
 
-function createScheduledEmails(reminder, req){
-    const scheduledEmails = [];
+function createNotifications(reminder, req){
+    const notifications = [];
     if(!reminder.startDate){
-        const scheduledEmail = new ScheduledEmail({
+        const notification = new Notification({
             scheduledDateTime: reminder.dueDate,
-            subject: `Reminder: ${reminder.title}`,
+            title: `Reminder: ${reminder.title}`,
             body: reminder.memo,
-            receiver: req.user.local.email,
+            userEmail: req.user.local.email,
             reminder_id: reminder.id
         })
-        scheduledEmails.push(scheduledEmail);
+        notifications.push(notification);
     }
-    return scheduledEmails;
+    return notifications;
 }
 
 module.exports = router;
