@@ -3,6 +3,7 @@ const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
 const Reminder = require('../models/reminder');
 const ScheduledEmail = require('../models/scheduled-email');
 const fawn = require('fawn');
+const { emailScheduler } = require('../emailScheduler');
 
 const router = express.Router();
 
@@ -37,13 +38,24 @@ router.post('/', ensureLoggedIn(), function(req, res){
 
     task
     .run()
-    .then(() => { res.status(201).json(reminder) })
-    .catch(err => { res.status(500).json({ message: 'Internal server error' }) });
+    .then(() => {
+        for (let scheduledEmail of scheduledEmails){
+            emailScheduler.add(
+                scheduledEmail.id, scheduledEmail.scheduledDateTime, scheduledEmail.subject,
+                scheduledEmail.body, scheduledEmail.receiver
+            );
+        }
+        res.status(201).json(reminder)
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({ message: 'Internal server error' }) });
 
 })
 
 router.put('/:id', ensureLoggedIn(), async function(req, res){
     const reminder = await Reminder.findById(req.params.id);
+    const scheduledEmails = await ScheduledEmail.find({reminder_id: req.params.id});
 
     if (!reminder) {
         res.status(404).json({ message: `Item with id: ${req.params._id} not found` });
@@ -56,7 +68,7 @@ router.put('/:id', ensureLoggedIn(), async function(req, res){
         memo: req.body.memo,
         user_id: req.user.id
     });
-    const scheduledEmails = createScheduledEmails(newReminder, req);
+    const newScheduledEmails = createScheduledEmails(newReminder, req);
 
     const task = fawn.Task();
     //Remove old reminder and associated scheduled emails
@@ -64,20 +76,31 @@ router.put('/:id', ensureLoggedIn(), async function(req, res){
     task.remove("scheduledemails", {reminder_id: req.params.id});
     //Create new reminder and assicuated scheduled emails
     task.save('reminders', newReminder);
-    for (let scheduledEmail of scheduledEmails) {
+    for (let scheduledEmail of newScheduledEmails) {
         task.save('scheduledemails', scheduledEmail);
     }
     task
     .run()
-    .then(() => { res.status(204).end() })
+    .then(() => {
+        for (let scheduledemail of scheduledEmails){
+            emailScheduler.remove(scheduledemail.id);
+        }
+        for (let scheduledEmail of newScheduledEmails){
+            emailScheduler.add(
+                scheduledEmail.id, scheduledEmail.scheduledDateTime, scheduledEmail.subject,
+                scheduledEmail.body, scheduledEmail.receiver
+            );
+        }
+        res.status(204).end()
+    })
     .catch(err => {
-        console.log(err);
         res.status(500).json({ message: 'Internal server error' });
     });
 })
 
 router.delete('/:id', ensureLoggedIn(), async function(req, res){
     const reminder = await Reminder.findById(req.params.id);
+    const scheduledEmails = await ScheduledEmail.find({reminder_id: req.params.id});
 
     if (!reminder) {
         res.status(404).json({ message: `Item with id: ${req.params._id} not found` });
@@ -88,7 +111,12 @@ router.delete('/:id', ensureLoggedIn(), async function(req, res){
     task.remove("scheduledemails", {reminder_id: req.params.id});
     task
     .run()
-    .then(() => { res.status(204).end() })
+    .then(() => {
+        for (let scheduledemail of scheduledEmails){
+            emailScheduler.remove(scheduledemail.id);
+        }
+        res.status(204).end();
+    })
     .catch(err => {
         res.status(500).json({ message: 'Internal server error' });
     });

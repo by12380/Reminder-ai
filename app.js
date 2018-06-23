@@ -17,6 +17,7 @@ var reminderRouter = require('./routes/reminder');
 
 const { DATABASE_URL, PORT } = require('./config');
 const { initLocalLoginInAndRegisterStrategies } = require('./passport-config');
+const ScheduledEmail = require('./models/scheduled-email');
 const { emailScheduler } = require('./emailScheduler');
 
 const User = require('./models/user');
@@ -71,6 +72,11 @@ passport.deserializeUser(function(id, done) {
     done(err, user);
   });
 });
+
+//Load scheduler on start up
+ScheduledEmail.find({}).then((scheduledEmails) => {
+  emailScheduler.addAll(scheduledEmails);
+})
 
 let server;
 

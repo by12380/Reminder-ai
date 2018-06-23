@@ -3,7 +3,7 @@ const { transporter } = require('./email-config');
 const { GMAIL_USERNAME } = require('./config');
 
 const emailScheduler = {
-    add: function(id, scheduledDateTime, sender = GMAIL_USERNAME, receiver, subject, body, smtpClient = transporter) {
+    add: function(id, scheduledDateTime, subject, body, receiver, sender = GMAIL_USERNAME, smtpClient = transporter) {
         schedule.scheduleJob(id, scheduledDateTime, function(){
             smtpClient.sendMail({
                 from: sender,
@@ -17,7 +17,15 @@ const emailScheduler = {
                   console.log(info);
             })
         });
-        console.log('job added!');
+        console.log(`Added schedule: ${id}`);
+    },
+    addAll: function(scheduledEmails){
+        for (let scheduledEmail of scheduledEmails){
+            this.add(
+                scheduledEmail.id, scheduledEmail.scheduledDateTime, scheduledEmail.subject,
+                scheduledEmail.body, scheduledEmail.receiver
+            );
+        }
     },
     remove: function(id) {
         schedule.cancelJob(id);
