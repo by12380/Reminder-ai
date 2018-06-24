@@ -27,6 +27,14 @@
     z-index: 99;
 }
 
+.notification-title {
+    padding-left: 3px;
+}
+
+.notification-body {
+    font-size: 14px;
+}
+
 #emailNotification ~ label, #editEmailNotification ~ label {
     padding-left: 5px;
     font-size: 14px;

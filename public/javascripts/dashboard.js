@@ -231,8 +231,8 @@ function initializeSocketIO() {
     socket.on('notification', function(notification){
         const item = $(`<div class="notification animated fadeInRight alert alert-danger alert-dismissible">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Reminder: </strong>${notification.title}
-            <div>${notification.body}</div>
+            <strong>Reminder: <span class="notification-title">${notification.title}</span></strong>
+            <div class="notification-body">${notification.body}</div>
             </div>`).hide().show();
         $('body').append(item);
         renderRemindersPartialPage();
