@@ -1,7 +1,10 @@
 .reminder-container {
-    width: 350px;
     height: 80vh;
     overflow: auto;
+}
+
+.reminder {
+    cursor: pointer;
 }
 
 .date {

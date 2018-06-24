@@ -13,10 +13,13 @@
 <body>
     <%- include('shared-header') %>
     <div class="container-fluid">
-        <div id="reminder-container" class="reminder-container float-right m-2"></div>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAddReminderForm">
-            Add Reminder
-        </button>
+        <div class="row">
+            <div class="col-md-8">
+            </div>
+            <div class="col-md-4">
+                <div id="reminder-container" class="reminder-container m-2"></div>
+            </div>
+        </div>
     </div>
 
     <%- include('partial/add-reminder-modal') %>

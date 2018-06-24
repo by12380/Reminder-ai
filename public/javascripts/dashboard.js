@@ -195,7 +195,7 @@ function renderReminders(reminders) {
         }
         $('#reminder-container').append(`
             <div
-                class="js-reminder card m-3 ${cardBgColorClass}"
+                class="js-reminder reminder card m-3 ${cardBgColorClass}"
                 data-id="${reminder.id}"
                 data-title="${reminder.title}"
                 data-due-date="${reminder.dueDate}"
