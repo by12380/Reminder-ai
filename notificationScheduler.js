@@ -5,21 +5,23 @@ const User = require('./models/user');
 const Notification = require('./models/notifications');
 
 const notificationScheduler = {
-    add: function(id, scheduledDateTime, title, body, receiverEmail, hostEmail = GMAIL_USERNAME, smtpClient = transporter) {
+    add: function(id, scheduledDateTime, emailNotification, title, body, receiverEmail, hostEmail = GMAIL_USERNAME, smtpClient = transporter) {
         const that = this;
         schedule.scheduleJob(id, scheduledDateTime, async function(){
-            //Schedule email delivery
-            await smtpClient.sendMail({
-                from: hostEmail,
-                to: receiverEmail,
-                subject: title,
-                html: body
-            }, function (err, info) {
-                if(err)
-                  console.log(err)
-                else
-                  console.log(`Email notification for job id: ${id} sent - ${info.messageId}`);
-            });
+            if (emailNotification) {
+                //Schedule email delivery
+                await smtpClient.sendMail({
+                    from: hostEmail,
+                    to: receiverEmail,
+                    subject: title,
+                    html: body
+                }, function (err, info) {
+                    if(err)
+                    console.log(err)
+                    else
+                    console.log(`Email notification for job id: ${id} sent - ${info.messageId}`);
+                });
+            }
             const { getSocketIO } = require('./app');
             const io = getSocketIO();
             await User.findOne({'local.email': receiverEmail}).then((user) => {
@@ -39,9 +41,8 @@ const notificationScheduler = {
     addAll: function(notifications){
         for (let notification of notifications){
             this.add(
-                notification.id, notification.scheduledDateTime, notification.title,
-                notification.body, notification.userEmail
-            );
+                notification.id, notification.scheduledDateTime, notification.emailNotification,
+                notification.title, notification.body, notification.userEmail);
         }
     },
     remove: function(id) {

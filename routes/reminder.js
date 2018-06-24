@@ -27,6 +27,7 @@ router.post('/', ensureLoggedIn(), function(req, res){
         dueDate: req.body.dueDate,
         startDate: req.body.startDate,
         memo: req.body.memo,
+        emailNotification: req.body.emailNotification,
         user_id: req.user.id
     });
     const notifications = createNotifications(reminder, req);
@@ -41,8 +42,8 @@ router.post('/', ensureLoggedIn(), function(req, res){
     .then(() => {
         for (let notification of notifications){
             notificationScheduler.add(
-                notification.id, notification.scheduledDateTime, notification.title,
-                notification.body, notification.userEmail
+                notification.id, notification.scheduledDateTime, notification.emailNotification,
+                notification.title, notification.body, notification.userEmail
             );
         }
         res.status(201).json(reminder)
@@ -66,6 +67,7 @@ router.put('/:id', ensureLoggedIn(), async function(req, res){
         dueDate: req.body.dueDate,
         startDate: req.body.startDate,
         memo: req.body.memo,
+        emailNotification: req.body.emailNotification,
         user_id: req.user.id
     });
     const newNotifications = createNotifications(newReminder, req);
@@ -87,8 +89,8 @@ router.put('/:id', ensureLoggedIn(), async function(req, res){
         }
         for (let notification of newNotifications){
             notificationScheduler.add(
-                notification.id, notification.scheduledDateTime, notification.title,
-                notification.body, notification.userEmail
+                notification.id, notification.scheduledDateTime, notification.emailNotification,
+                notification.title, notification.body, notification.userEmail
             );
         }
         res.status(204).end()
@@ -130,6 +132,7 @@ function createNotifications(reminder, req){
             title: `${reminder.title}`,
             body: reminder.memo,
             userEmail: req.user.local.email,
+            emailNotification: reminder.emailNotification,
             reminder_id: reminder.id
         })
         notifications.push(notification);

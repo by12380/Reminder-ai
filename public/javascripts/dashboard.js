@@ -8,7 +8,8 @@ const DASHBOARD_DATA = {
         title: null,
         dueDate: null,
         startDate: null,
-        memo: null
+        memo: null,
+        emailNotification: null
     },
     socketId: null,
 }
@@ -63,6 +64,9 @@ function handleChangeOnEditReminder() {
     $("#editMemo").change(function(){
         DASHBOARD_DATA.editReminder.memo = $(this).val();
     })
+    $("#editEmailNotification").change(function(){
+        DASHBOARD_DATA.editReminder.emailNotification = $(this).is(':checked');
+    })
 }
 
 function handelSubmitOnAddReminderForm() {
@@ -72,7 +76,8 @@ function handelSubmitOnAddReminderForm() {
             title: $('#title').val(),
             dueDate: DASHBOARD_DATA.addReminder.dueDate,
             startDate: DASHBOARD_DATA.addReminder.startDate,
-            memo: $('#memo').val()
+            memo: $('#memo').val(),
+            emailNotification: $('#emailNotification').is(':checked')
         }, function(){
             //Refresh page
             window.location = '/dashboard';
@@ -83,16 +88,14 @@ function handelSubmitOnAddReminderForm() {
 function handelSubmitOnEditReminderForm() {
     $('#editReminderForm').submit(function(e){
         e.preventDefault();
-        for (let field in DASHBOARD_DATA.editReminder) {
-            console.log(DASHBOARD_DATA.editReminder[field]);
-        }
         $.ajax({
             url: `/reminder/${DASHBOARD_DATA.editReminder.id}`,
             data: {
                 title: DASHBOARD_DATA.editReminder.title,
                 dueDate: DASHBOARD_DATA.editReminder.dueDate,
                 startDate: DASHBOARD_DATA.editReminder.startDate,
-                memo: DASHBOARD_DATA.editReminder.memo
+                memo: DASHBOARD_DATA.editReminder.memo,
+                emailNotification: DASHBOARD_DATA.editReminder.emailNotification
             },
             method: 'put'
         }).done(function(){
@@ -123,11 +126,11 @@ function handleClickOnReminder() {
         if($(this).data('memo') != 'undefined') {
             $('#editMemo').val($(this).data('memo')).trigger('change');
         }
+        $('#editEmailNotification').prop('checked', $(this).data('emailNotification'))
 
         for (let field in DASHBOARD_DATA.editReminder) {
             if ($(this).data(field) != 'undefined') {
                 DASHBOARD_DATA.editReminder[field] = $(this).data(field);
-                console.log(DASHBOARD_DATA.editReminder[field]);
             }
         }
         $('#editReminderBtn').click();
@@ -197,7 +200,8 @@ function renderReminders(reminders) {
                 data-title="${reminder.title}"
                 data-due-date="${reminder.dueDate}"
                 data-start-date="${reminder.startDate}"
-                data-memo="${reminder.memo}">
+                data-memo="${reminder.memo}"
+                data-email-notification="${reminder.emailNotification}">
 
                 <div class="card-body">
                     <button type="button" class="js-close-reminder close-reminder close waves-effect waves-light" aria-label="Close">

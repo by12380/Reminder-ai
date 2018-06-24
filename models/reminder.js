@@ -6,6 +6,7 @@ const reminderSchema = mongoose.Schema({
     dueDate: Date,
     startDate: Date,
     memo: String,
+    emailNotification: Boolean,
     user_id: String
 })
 
@@ -28,6 +29,7 @@ reminderSchema.methods.serialize = function(){
         dueDate: this.dueDate,
         startDate: this.startDate,
         memo: this.memo,
+        emailNotification: this.emailNotification,
         percentProgress: this.getPercentProgress()
     }
 }
