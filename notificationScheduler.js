@@ -2,12 +2,14 @@ const schedule = require('node-schedule');
 const { transporter } = require('./email-config');
 const { GMAIL_USERNAME } = require('./config');
 const User = require('./models/user');
+const Notification = require('./models/notifications');
 
 const notificationScheduler = {
     add: function(id, scheduledDateTime, title, body, receiverEmail, hostEmail = GMAIL_USERNAME, smtpClient = transporter) {
-        schedule.scheduleJob(id, scheduledDateTime, function(){
+        const that = this;
+        schedule.scheduleJob(id, scheduledDateTime, async function(){
             //Schedule email delivery
-            smtpClient.sendMail({
+            await smtpClient.sendMail({
                 from: hostEmail,
                 to: receiverEmail,
                 subject: title,
@@ -16,17 +18,21 @@ const notificationScheduler = {
                 if(err)
                   console.log(err)
                 else
-                  console.log(`Email notification sent - ${info.messageId}`);
+                  console.log(`Email notification for job id: ${id} sent - ${info.messageId}`);
             });
             const { getSocketIO } = require('./app');
             const io = getSocketIO();
-            User.findOne({'local.email': receiverEmail}).then((user) => {
+            await User.findOne({'local.email': receiverEmail}).then((user) => {
                 if (io.sockets.connected[user.socketId]) {
                     io.sockets.connected[user.socketId]
                         .emit('notification', {title: title, body: body});
                 }
             })
-            //TODO: Cancel schedule upon job completion
+            console.log(`Scheduled job id: ${id} complete`);
+            await Notification.findByIdAndRemove(id).then(function(){
+                that.remove(id);
+                console.log(`Removed scheduled job id: ${id}`);
+            })
         });
         console.log(`Added schedule: ${id}`);
     },
