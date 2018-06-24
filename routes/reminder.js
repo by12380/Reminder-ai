@@ -127,7 +127,7 @@ function createNotifications(reminder, req){
     if(!reminder.startDate){
         const notification = new Notification({
             scheduledDateTime: reminder.dueDate,
-            title: `Reminder: ${reminder.title}`,
+            title: `${reminder.title}`,
             body: reminder.memo,
             userEmail: req.user.local.email,
             reminder_id: reminder.id

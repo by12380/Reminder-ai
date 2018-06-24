@@ -1,4 +1,4 @@
-const APP_DATA = {
+const DASHBOARD_DATA = {
     addReminder: {
         dueDate: null,
         startDate: null
@@ -10,7 +10,7 @@ const APP_DATA = {
         startDate: null,
         memo: null
     },
-    timeInterval: null
+    socketId: null,
 }
 
 function initializeDateTimePicker() {
@@ -39,29 +39,29 @@ function initializeDateTimePicker() {
 
 function handleChangeOnAddReminder() {
     $("#dueDate").on("change.datetimepicker", function (e) {
-        APP_DATA.addReminder.dueDate = e.date._d;
+        DASHBOARD_DATA.addReminder.dueDate = e.date._d;
     });
     $("#startDate").on("change.datetimepicker", function (e) {
-        APP_DATA.addReminder.startDate = e.date._d;
+        DASHBOARD_DATA.addReminder.startDate = e.date._d;
     });
 }
 
 function handleChangeOnEditReminder() {
     $("#editTitle").change(function(){
-        APP_DATA.editReminder.title = $(this).val();
+        DASHBOARD_DATA.editReminder.title = $(this).val();
     })
     $("#editDueDate").on("change.datetimepicker", function (e) {
         if (e.date) {
-            APP_DATA.editReminder.dueDate = e.date._d;
+            DASHBOARD_DATA.editReminder.dueDate = e.date._d;
         }
     });
     $("#editStartDate").on("change.datetimepicker", function (e) {
         if (e.date) {
-            APP_DATA.editReminder.startDate = e.date._d;
+            DASHBOARD_DATA.editReminder.startDate = e.date._d;
         }
     });
     $("#editMemo").change(function(){
-        APP_DATA.editReminder.memo = $(this).val();
+        DASHBOARD_DATA.editReminder.memo = $(this).val();
     })
 }
 
@@ -70,8 +70,8 @@ function handelSubmitOnAddReminderForm() {
         e.preventDefault();
         $.post('/reminder', {
             title: $('#title').val(),
-            dueDate: APP_DATA.addReminder.dueDate,
-            startDate: APP_DATA.addReminder.startDate,
+            dueDate: DASHBOARD_DATA.addReminder.dueDate,
+            startDate: DASHBOARD_DATA.addReminder.startDate,
             memo: $('#memo').val()
         }, function(){
             //Refresh page
@@ -83,16 +83,16 @@ function handelSubmitOnAddReminderForm() {
 function handelSubmitOnEditReminderForm() {
     $('#editReminderForm').submit(function(e){
         e.preventDefault();
-        for (let field in APP_DATA.editReminder) {
-            console.log(APP_DATA.editReminder[field]);
+        for (let field in DASHBOARD_DATA.editReminder) {
+            console.log(DASHBOARD_DATA.editReminder[field]);
         }
         $.ajax({
-            url: `/reminder/${APP_DATA.editReminder.id}`,
+            url: `/reminder/${DASHBOARD_DATA.editReminder.id}`,
             data: {
-                title: APP_DATA.editReminder.title,
-                dueDate: APP_DATA.editReminder.dueDate,
-                startDate: APP_DATA.editReminder.startDate,
-                memo: APP_DATA.editReminder.memo
+                title: DASHBOARD_DATA.editReminder.title,
+                dueDate: DASHBOARD_DATA.editReminder.dueDate,
+                startDate: DASHBOARD_DATA.editReminder.startDate,
+                memo: DASHBOARD_DATA.editReminder.memo
             },
             method: 'put'
         }).done(function(){
@@ -105,8 +105,8 @@ function handelSubmitOnEditReminderForm() {
 
 function handleClickOnReminder() {
     $('#reminder-container').on('click', '.js-reminder', function(){
-        for (let field in APP_DATA.editReminder) {
-            APP_DATA.editReminder[field] = null;
+        for (let field in DASHBOARD_DATA.editReminder) {
+            DASHBOARD_DATA.editReminder[field] = null;
         }
 
         $('#editTitle').val($(this).data('title')).trigger('change');
@@ -124,10 +124,10 @@ function handleClickOnReminder() {
             $('#editMemo').val($(this).data('memo')).trigger('change');
         }
 
-        for (let field in APP_DATA.editReminder) {
+        for (let field in DASHBOARD_DATA.editReminder) {
             if ($(this).data(field) != 'undefined') {
-                APP_DATA.editReminder[field] = $(this).data(field);
-                console.log(APP_DATA.editReminder[field]);
+                DASHBOARD_DATA.editReminder[field] = $(this).data(field);
+                console.log(DASHBOARD_DATA.editReminder[field]);
             }
         }
         $('#editReminderBtn').click();
@@ -171,12 +171,6 @@ function renderRemindersPartialPage() {
     $.getJSON('/reminder', function(reminders){
         renderReminders(reminders);
     })
-    clearInterval(APP_DATA.timeInterval);
-    APP_DATA.timeInterval = setInterval(function(){
-        $.getJSON('/reminder', function(reminders){
-            renderReminders(reminders);
-        })
-    }, 60000)
 }
 
 function renderReminders(reminders) {
@@ -218,7 +212,31 @@ function renderReminders(reminders) {
     }
 }
 
+function initializeSocketIO() {
+    const socket = io()
+    socket.on('connect', function() {
+        DASHBOARD_DATA.socketId = socket.io.engine.id;
+        $.ajax({
+            url: '/socketId',
+            data: {
+                socketId: DASHBOARD_DATA.socketId
+            },
+            method: 'put'
+        })
+    });
+    socket.on('notification', function(notification){
+        const item = $(`<div class="notification animated fadeInRight alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Reminder: </strong>${notification.title}
+            <div>${notification.body}</div>
+            </div>`).hide().show();
+        $('body').append(item);
+        renderRemindersPartialPage();
+    })
+}
+
 function initializeDashboard() {
+    initializeSocketIO();
     initializeDateTimePicker();
     handleChangeOnAddReminder();
     handleChangeOnEditReminder();

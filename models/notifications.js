@@ -8,4 +8,4 @@ const notificationSchema = mongoose.Schema({
     reminder_id: { type: String, required: true }
 })
 
-module.exports = mongoose.model('NotificationSchema', notificationSchema);
+module.exports = mongoose.model('Notification', notificationSchema);

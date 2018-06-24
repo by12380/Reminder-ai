@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const passport = require('passport');
 const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
+const User = require('../models/user');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -39,6 +40,16 @@ router.post('/register',
 
 router.get('/dashboard', ensureLoggedIn(), function(req, res){
   res.render('dashboard.ejs');
+})
+
+router.put('/socketId', ensureLoggedIn(), (req, res) => {
+  User.findByIdAndUpdate(req.user.id, { socketId: req.body.socketId })
+    .then(() => {
+      res.status(204).end();
+    })
+    .catch(() => {
+      res.status(500).json({ message: 'Internal server error' });
+    })
 })
 
 module.exports = router;

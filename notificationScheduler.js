@@ -1,6 +1,7 @@
 const schedule = require('node-schedule');
 const { transporter } = require('./email-config');
 const { GMAIL_USERNAME } = require('./config');
+const User = require('./models/user');
 
 const notificationScheduler = {
     add: function(id, scheduledDateTime, title, body, receiverEmail, hostEmail = GMAIL_USERNAME, smtpClient = transporter) {
@@ -15,9 +16,16 @@ const notificationScheduler = {
                 if(err)
                   console.log(err)
                 else
-                  console.log(info);
+                  console.log(`Email notification sent - ${info.messageId}`);
+            });
+            const { getSocketIO } = require('./app');
+            const io = getSocketIO();
+            User.findOne({'local.email': receiverEmail}).then((user) => {
+                if (io.sockets.connected[user.socketId]) {
+                    io.sockets.connected[user.socketId]
+                        .emit('notification', {title: title, body: body});
+                }
             })
-
             //TODO: Cancel schedule upon job completion
         });
         console.log(`Added schedule: ${id}`);

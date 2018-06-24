@@ -22,9 +22,8 @@ const { notificationScheduler } = require('./notificationScheduler');
 
 const User = require('./models/user');
 
+const app = express();
 fawn.init(mongoose);
-
-var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -74,11 +73,13 @@ passport.deserializeUser(function(id, done) {
 });
 
 //Load scheduler on start up
-Notification.find({}).then((notifications) => {
+Notification.find().then((notifications) => {
   notificationScheduler.addAll(notifications);
 })
 
+
 let server;
+let io;
 
 // this function connects to our database, then starts the server
 function runServer(databaseUrl, port = PORT) {
@@ -91,10 +92,12 @@ function runServer(databaseUrl, port = PORT) {
         console.log(`Your app is listening on port ${port}`);
         resolve();
       })
-        .on('error', err => {
-          mongoose.disconnect();
-          reject(err);
-        });
+      .on('error', err => {
+        mongoose.disconnect();
+        reject(err);
+      });
+      //Initialize socket io
+      io = require('socket.io')(server);
     });
   });
 }
@@ -115,10 +118,14 @@ function closeServer() {
   });
 }
 
+function getSocketIO() {
+  return io;
+}
+
 // if server.js is called directly (aka, with `node server.js`), this block
 // runs. but we also export the runServer command so other code (for instance, test code) can start the server as needed.
 if (require.main === module) {
   runServer(DATABASE_URL).catch(err => console.error(err));
 }
 
-module.exports = { runServer, app, closeServer };
+module.exports = { runServer, app, closeServer, getSocketIO };
