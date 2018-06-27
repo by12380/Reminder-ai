@@ -42,3 +42,7 @@
     padding-left: 5px;
     font-size: 14px;
 }
+
+#setAlert ~ label, #editSetAlert ~ label {
+    font-size: 14px;
+}

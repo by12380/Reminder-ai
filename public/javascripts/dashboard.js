@@ -8,10 +8,26 @@ const DASHBOARD_DATA = {
         title: null,
         dueDate: null,
         startDate: null,
+        setAlert: null,
+        progressAlert: null,
         memo: null,
         emailNotification: null
     },
     socketId: null,
+}
+
+const progressAlertEnum = {
+    0: 'On every 50% progress',
+    1: 'On every 25% progress',
+    2: 'On every 20% progress',
+    3: 'On every 10% progress',
+    getValue: function(str) {
+        for (let i in this) {
+            if (this[i] === str) {
+                return i;
+            }
+        }
+    }
 }
 
 function initializeDateTimePicker() {
@@ -44,6 +60,12 @@ function handleChangeOnAddReminder() {
     });
     $("#startDate").on("change.datetimepicker", function (e) {
         DASHBOARD_DATA.addReminder.startDate = e.date._d;
+        if ($(this).val()) {
+            $('#alertFormGroup').show();
+        }
+        else {
+            $('#alertFormGroup').hide();
+        }
     });
 }
 
@@ -60,7 +82,24 @@ function handleChangeOnEditReminder() {
         if (e.date) {
             DASHBOARD_DATA.editReminder.startDate = e.date._d;
         }
+        else {
+            DASHBOARD_DATA.editReminder.startDate = null;
+        }
+        if ($(this).val()) {
+            $('#editAlertFormGroup').show();
+        }
+        else {
+            $('#editAlertFormGroup').hide();
+            $('#editSetAlert').prop('checked', false);
+            DASHBOARD_DATA.editReminder.setAlert = false;
+        }
     });
+    $('#editSetAlert').change(function(){
+        DASHBOARD_DATA.editReminder.setAlert = $(this).is(':checked');
+    })
+    $('#editProgressAlert').change(function(){
+        DASHBOARD_DATA.editReminder.progressAlert = progressAlertEnum[$(this).val()];
+    })
     $("#editMemo").change(function(){
         DASHBOARD_DATA.editReminder.memo = $(this).val();
     })
@@ -77,6 +116,8 @@ function handelSubmitOnAddReminderForm() {
             dueDate: DASHBOARD_DATA.addReminder.dueDate,
             startDate: DASHBOARD_DATA.addReminder.startDate,
             memo: $('#memo').val(),
+            setAlert: $('#setAlert').is(':checked'),
+            progressAlert: progressAlertEnum[$('#progressAlert').val()],
             emailNotification: $('#emailNotification').is(':checked')
         }, function(){
             //Refresh page
@@ -94,6 +135,8 @@ function handelSubmitOnEditReminderForm() {
                 title: DASHBOARD_DATA.editReminder.title,
                 dueDate: DASHBOARD_DATA.editReminder.dueDate,
                 startDate: DASHBOARD_DATA.editReminder.startDate,
+                setAlert: DASHBOARD_DATA.editReminder.setAlert,
+                progressAlert: DASHBOARD_DATA.editReminder.progressAlert,
                 memo: DASHBOARD_DATA.editReminder.memo,
                 emailNotification: DASHBOARD_DATA.editReminder.emailNotification
             },
@@ -123,15 +166,26 @@ function handleClickOnReminder() {
         .removeClass('datetimepicker-input')
         .trigger('change')
         .addClass('datetimepicker-input');
+
+        $('#editSetAlert').prop('checked', $(this).data('setAlert'));
+        $('#editProgressAlert').val(progressAlertEnum.getValue($(this).data('progressAlert')));
+
         if($(this).data('memo') != 'undefined') {
             $('#editMemo').val($(this).data('memo')).trigger('change');
         }
-        $('#editEmailNotification').prop('checked', $(this).data('emailNotification'))
+        $('#editEmailNotification').prop('checked', $(this).data('emailNotification'));
 
         for (let field in DASHBOARD_DATA.editReminder) {
             if ($(this).data(field) != 'undefined') {
                 DASHBOARD_DATA.editReminder[field] = $(this).data(field);
             }
+        }
+
+        if (!$('#editStartDate').val()){
+            $('#editAlertFormGroup').hide();
+        }
+        if (!$('#editSetAlert').is(':checked')) {
+            $('#editProgressAlert').hide();
         }
         $('#editReminderBtn').click();
     })
@@ -170,6 +224,26 @@ function handleDeleteOnReminder() {
     })
 }
 
+function handleChangeOnAlertCheckBox() {
+    $('#setAlert').change(function(){
+        if ($(this).is(':checked') && $('#startDate').val()) {
+            $('#progressAlert').show();
+        }
+        else {
+            $('#progressAlert').hide();
+        }
+    })
+
+    $('#editSetAlert').change(function(){
+        if ($(this).is(':checked') && $('#editStartDate').val()) {
+            $('#editProgressAlert').show();
+        }
+        else {
+            $('#editProgressAlert').hide();
+        }
+    })
+}
+
 function renderRemindersPartialPage() {
     $.getJSON('/reminder', function(reminders){
         renderReminders(reminders);
@@ -184,11 +258,17 @@ function renderReminders(reminders) {
     $('#reminder-container').html("");
 
     for (let reminder of reminders) {
-        if (reminder.percentProgress >= 90) {
+        if (reminder.percentProgress === 100) {
             cardBgColorClass = 'bg-danger';
             titleColorClass = 'text-white';
             dateColorClass = 'text-white';
-        } else {
+        }
+        else if (reminder.percentProgress >= 70) {
+            cardBgColorClass = 'bg-warning';
+            titleColorClass = 'text-white';
+            dateColorClass = 'text-white';
+        }
+        else {
             cardBgColorClass = '';
             titleColorClass = '';
             dateColorClass = 'grey-text';
@@ -200,6 +280,8 @@ function renderReminders(reminders) {
                 data-title="${reminder.title}"
                 data-due-date="${reminder.dueDate}"
                 data-start-date="${reminder.startDate}"
+                data-set-alert="${reminder.setAlert}"
+                data-progress-alert="${reminder.progressAlert}"
                 data-memo="${reminder.memo}"
                 data-email-notification="${reminder.emailNotification}">
 
@@ -239,7 +321,13 @@ function initializeSocketIO() {
     })
 }
 
+function initialzeHiddenElements() {
+    $('#alertFormGroup').hide();
+    $('#progressAlert').hide();
+}
+
 function initializeDashboard() {
+    initialzeHiddenElements();
     initializeSocketIO();
     initializeDateTimePicker();
     handleChangeOnAddReminder();
@@ -248,6 +336,7 @@ function initializeDashboard() {
     handelSubmitOnEditReminderForm();
     handleClickOnReminder();
     handleDeleteOnReminder();
+    handleChangeOnAlertCheckBox();
     renderRemindersPartialPage();
 }
 

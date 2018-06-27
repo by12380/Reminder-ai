@@ -27,6 +27,8 @@ router.post('/', ensureLoggedIn(), function(req, res){
         dueDate: req.body.dueDate,
         startDate: req.body.startDate,
         memo: req.body.memo,
+        setAlert: req.body.setAlert,
+        progressAlert: req.body.progressAlert,
         emailNotification: req.body.emailNotification,
         user_id: req.user.id
     });
@@ -66,6 +68,8 @@ router.put('/:id', ensureLoggedIn(), async function(req, res){
         title: req.body.title,
         dueDate: req.body.dueDate,
         startDate: req.body.startDate,
+        setAlert: req.body.setAlert,
+        progressAlert: req.body.progressAlert,
         memo: req.body.memo,
         emailNotification: req.body.emailNotification,
         user_id: req.user.id
