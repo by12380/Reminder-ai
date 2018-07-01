@@ -24,6 +24,12 @@
         </div>
     </div>
 
+    <div class="input-single">
+        <textarea id="note-textarea" placeholder="Create a new note by typing or using voice recognition." rows="6"></textarea>
+    </div>
+    <button id="start-record-btn" title="Start Recording">Start Recognition</button>
+    <button id="pause-record-btn" title="Pause Recording">Pause Recognition</button>
+
     <%- include('partial/add-reminder-modal') %>
     <%- include('partial/edit-reminder-modal') %>
 
@@ -32,8 +38,9 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.0-alpha14/js/tempusdominus-bootstrap-4.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
-    <script src="http://d3js.org/d3.v3.min.js"></script>
-    <script src="/javascripts/pie-chart.js"></script>
+    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="/javascripts/pie-chart.js"></script>
+    <script type="text/javascript" src="/javascripts/speech-to-text.js"></script>
     <script type="text/javascript" src="/javascripts/dashboard.js"></script>
 </body>
 </html>
