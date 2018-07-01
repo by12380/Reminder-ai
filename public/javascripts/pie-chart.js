@@ -2,7 +2,11 @@ const D3_ELEMENTS = {
     svg: null
 }
 
-const CHART_DATA = [{count: 0}, {count: 0}, {count: 0}];
+const CHART_DATA = [
+    {status: "Warning", percent: 0, count: 0},
+    {status: "Need attention", percent: 0, count: 0},
+    {status: "In progress", percent: 0, count: 0}
+];
 
 function change(data){};
 

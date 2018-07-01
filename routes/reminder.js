@@ -45,7 +45,7 @@ router.post('/', ensureLoggedIn(), function(req, res){
     .then(() => {
         for (let notification of notifications){
             notificationScheduler.add(
-                notification.id, notification.scheduledDateTime, notification.emailNotification,
+                notification.id, notification.scheduledDateTime, notification.display, notification.emailNotification,
                 notification.title, notification.body, notification.userEmail
             );
         }
@@ -94,7 +94,7 @@ router.put('/:id', ensureLoggedIn(), async function(req, res){
         }
         for (let notification of newNotifications){
             notificationScheduler.add(
-                notification.id, notification.scheduledDateTime, notification.emailNotification,
+                notification.id, notification.scheduledDateTime, notification.display, notification.emailNotification,
                 notification.title, notification.body, notification.userEmail
             );
         }
@@ -131,53 +131,71 @@ router.delete('/:id', ensureLoggedIn(), async function(req, res){
 
 function createNotifications(reminder, req){
     const notifications = [];
-    if(!reminder.setAlert){
-        const notification = new Notification({
-            scheduledDateTime: reminder.dueDate,
-            title: `${reminder.title}`,
-            body: reminder.memo,
-            userEmail: req.user.local.email,
-            emailNotification: reminder.emailNotification,
-            reminder_id: reminder.id
-        })
-        notifications.push(notification);
-        return notifications;
-    }
 
     const start = moment(reminder.startDate);
     const due = moment(reminder.dueDate);
     const diff = due.diff(start);
-    let fraction;
-    switch(parseInt(progressAlertEnum.getValue(reminder.progressAlert))) {
-        case 0:
-            fraction = 2;
-            break;
-        case 1:
-            fraction = 4;
-            break;
-        case 2:
-            fraction = 5;
-            break;
-        case 3:
-            fraction = 10;
-            break;
+
+    if(reminder.setAlert) {
+
+        let fraction;
+        switch(parseInt(progressAlertEnum.getValue(reminder.progressAlert))) {
+            case 0:
+                fraction = 2;
+                break;
+            case 1:
+                fraction = 4;
+                break;
+            case 2:
+                fraction = 5;
+                break;
+            case 3:
+                fraction = 10;
+                break;
+        }
+
+        let timeIncrement = diff / fraction;
+        let percentIncrement = 100 / fraction;
+        let percentProgress = percentIncrement;
+        for (let i = 1; i < fraction; i++, percentProgress += percentIncrement) {
+            let notification = new Notification({
+                scheduledDateTime: start.add(timeIncrement),
+                title: `${reminder.title}`,
+                body: reminder.memo,
+                userEmail: req.user.local.email,
+                percentProgress: percentProgress,
+                emailNotification: reminder.emailNotification,
+                reminder_id: reminder.id
+            })
+            notifications.push(notification);
+        }
     }
 
-    let timeIncrement = diff / fraction;
-    let percentIncrement = 100 / fraction;
-    let percentProgress = percentIncrement;
-    for (let i = 0; i < fraction; i++, percentProgress += percentIncrement) {
-        let notification = new Notification({
-            scheduledDateTime: start.add(timeIncrement),
+    //Defualt push notification at 70% progress
+    if (reminder.startDate) {
+        notifications.push(new Notification({
+            scheduledDateTime: moment(reminder.startDate).add(diff*70/100),
             title: `${reminder.title}`,
             body: reminder.memo,
             userEmail: req.user.local.email,
-            percentProgress: percentProgress,
-            emailNotification: reminder.emailNotification,
+            percentProgress: 70,
+            display: false,
+            emailNotification: false,
             reminder_id: reminder.id
-        })
-        notifications.push(notification);
+        }));
     }
+
+    //Defualt push notification at 100% progress
+    notifications.push(new Notification({
+        scheduledDateTime: reminder.dueDate,
+        title: `${reminder.title}`,
+        body: reminder.memo,
+        userEmail: req.user.local.email,
+        percentProgress: 100,
+        emailNotification: reminder.emailNotification,
+        reminder_id: reminder.id
+    }));
+
 
     return notifications;
 }

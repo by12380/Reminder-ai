@@ -5,7 +5,7 @@ const User = require('./models/user');
 const Notification = require('./models/notifications');
 
 const notificationScheduler = {
-    add: function(id, scheduledDateTime, emailNotification, title, body, receiverEmail, hostEmail = GMAIL_USERNAME, smtpClient = transporter) {
+    add: function(id, scheduledDateTime, display, emailNotification, title, body, receiverEmail, hostEmail = GMAIL_USERNAME, smtpClient = transporter) {
         const that = this;
         schedule.scheduleJob(id, scheduledDateTime, async function(){
             if (emailNotification) {
@@ -24,10 +24,11 @@ const notificationScheduler = {
             }
             const { getSocketIO } = require('./app');
             const io = getSocketIO();
+            console.log('email', receiverEmail);
             await User.findOne({'local.email': receiverEmail}).then((user) => {
                 if (io.sockets.connected[user.socketId]) {
                     io.sockets.connected[user.socketId]
-                        .emit('notification', {title: title, body: body});
+                        .emit('notification', {title: title, body: body, display: display});
                 }
             })
             console.log(`Scheduled job id: ${id} complete`);
@@ -41,7 +42,7 @@ const notificationScheduler = {
     addAll: function(notifications){
         for (let notification of notifications){
             this.add(
-                notification.id, notification.scheduledDateTime, notification.emailNotification,
+                notification.id, notification.scheduledDateTime, notification.display, notification.emailNotification,
                 notification.title, notification.body, notification.userEmail);
         }
     },

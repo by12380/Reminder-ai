@@ -255,8 +255,8 @@ function renderRemindersPartialPage() {
             {status: "Need attention", percent: 0, count: 0},
             {status: "In progress", percent: 0, count: 0}
         ]
+        const total = reminders.length;
         for (let reminder of reminders) {
-            const total = reminders.length;
             if(reminder.percentProgress >= DASHBOARD_DATA.statusPercentage.danger) {
                 data[0].count++;
                 data[0].percent = parseInt(data[0].count * 100 / total);
@@ -270,6 +270,13 @@ function renderRemindersPartialPage() {
                 data[2].percent = parseInt(data[2].count * 100 / total);
             }
         }
+
+        //Display arc for clock when no data
+        if (total === 0) {
+            data[2].count++;
+            data[2].percent = 0;
+        }
+
         change(data);
         renderReminders(reminders);
     })
@@ -336,12 +343,14 @@ function initializeSocketIO() {
         })
     });
     socket.on('notification', function(notification){
-        const item = $(`<div class="notification animated fadeInRight alert alert-danger alert-dismissible">
+        if (notification.display) {
+            const item = $(`<div class="notification animated fadeInRight alert alert-danger alert-dismissible">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             <strong>Reminder: <span class="notification-title">${notification.title}</span></strong>
             <div class="notification-body">${notification.body}</div>
             </div>`).hide().show();
-        $('body').append(item);
+            $('body').append(item);
+        }
         renderRemindersPartialPage();
     })
 }
