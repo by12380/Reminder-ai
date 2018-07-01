@@ -5,6 +5,7 @@ const notificationSchema = mongoose.Schema({
     title: { type: String, required: true },
     body: String,
     userEmail: String,
+    percentProgress: Number,
     emailNotification: Boolean,
     reminder_id: { type: String, required: true }
 })

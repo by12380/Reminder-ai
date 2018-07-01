@@ -3,6 +3,7 @@ const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
 const Reminder = require('../models/reminder');
 const Notification = require('../models/notifications');
 const fawn = require('fawn');
+const moment = require('moment');
 const { notificationScheduler } = require('../notificationScheduler');
 
 const router = express.Router();
@@ -130,7 +131,7 @@ router.delete('/:id', ensureLoggedIn(), async function(req, res){
 
 function createNotifications(reminder, req){
     const notifications = [];
-    if(!reminder.startDate){
+    if(!reminder.setAlert){
         const notification = new Notification({
             scheduledDateTime: reminder.dueDate,
             title: `${reminder.title}`,
@@ -140,8 +141,59 @@ function createNotifications(reminder, req){
             reminder_id: reminder.id
         })
         notifications.push(notification);
+        return notifications;
     }
+
+    const start = moment(reminder.startDate);
+    const due = moment(reminder.dueDate);
+    const diff = due.diff(start);
+    let fraction;
+    switch(parseInt(progressAlertEnum.getValue(reminder.progressAlert))) {
+        case 0:
+            fraction = 2;
+            break;
+        case 1:
+            fraction = 4;
+            break;
+        case 2:
+            fraction = 5;
+            break;
+        case 3:
+            fraction = 10;
+            break;
+    }
+
+    let timeIncrement = diff / fraction;
+    let percentIncrement = 100 / fraction;
+    let percentProgress = percentIncrement;
+    for (let i = 0; i < fraction; i++, percentProgress += percentIncrement) {
+        let notification = new Notification({
+            scheduledDateTime: start.add(timeIncrement),
+            title: `${reminder.title}`,
+            body: reminder.memo,
+            userEmail: req.user.local.email,
+            percentProgress: percentProgress,
+            emailNotification: reminder.emailNotification,
+            reminder_id: reminder.id
+        })
+        notifications.push(notification);
+    }
+
     return notifications;
+}
+
+const progressAlertEnum = {
+    0: 'On every 50% progress',
+    1: 'On every 25% progress',
+    2: 'On every 20% progress',
+    3: 'On every 10% progress',
+    getValue: function(str) {
+        for (let i in this) {
+            if (this[i] === str) {
+                return i;
+            }
+        }
+    }
 }
 
 module.exports = router;

@@ -14,6 +14,10 @@ const DASHBOARD_DATA = {
         emailNotification: null
     },
     socketId: null,
+    statusPercentage: {
+        danger: 95,
+        warning: 70
+    }
 }
 
 const progressAlertEnum = {
@@ -246,6 +250,27 @@ function handleChangeOnAlertCheckBox() {
 
 function renderRemindersPartialPage() {
     $.getJSON('/reminder', function(reminders){
+        data = [
+            {status: "Warning", percent: 0, count: 0},
+            {status: "Need attention", percent: 0, count: 0},
+            {status: "In progress", percent: 0, count: 0}
+        ]
+        for (let reminder of reminders) {
+            const total = reminders.length;
+            if(reminder.percentProgress >= DASHBOARD_DATA.statusPercentage.danger) {
+                data[0].count++;
+                data[0].percent = parseInt(data[0].count * 100 / total);
+            }
+            else if (reminder.percentProgress >= DASHBOARD_DATA.statusPercentage.warning) {
+                data[1].count++;
+                data[1].percent = parseInt(data[1].count * 100 / total);
+            }
+            else {
+                data[2].count++;
+                data[2].percent = parseInt(data[2].count * 100 / total);
+            }
+        }
+        change(data);
         renderReminders(reminders);
     })
 }
@@ -258,12 +283,12 @@ function renderReminders(reminders) {
     $('#reminder-container').html("");
 
     for (let reminder of reminders) {
-        if (reminder.percentProgress === 100) {
+        if (reminder.percentProgress >= DASHBOARD_DATA.statusPercentage.danger) {
             cardBgColorClass = 'bg-danger';
             titleColorClass = 'text-white';
             dateColorClass = 'text-white';
         }
-        else if (reminder.percentProgress >= 70) {
+        else if (reminder.percentProgress >= DASHBOARD_DATA.statusPercentage.warning) {
             cardBgColorClass = 'bg-warning';
             titleColorClass = 'text-white';
             dateColorClass = 'text-white';

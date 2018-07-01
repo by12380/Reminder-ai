@@ -1,5 +1,4 @@
 .reminder-container {
-    height: 80vh;
     overflow: auto;
 }
 
@@ -45,4 +44,54 @@
 
 #setAlert ~ label, #editSetAlert ~ label {
     font-size: 14px;
+}
+
+.toolTip {
+    position: absolute;
+    display: none;
+    width: auto;
+    height: auto;
+    background: none repeat scroll 0 0 #232323;
+    border: 0 none;
+    border-radius: 8px 8px 8px 8px;
+
+    color: white;
+    font: 12px sans-serif;
+    padding: 5px;
+    text-align: center;
+}
+
+.chart-container {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+@media screen and (min-width: 768px) {
+    .reminder-container {
+        height: 80vh;
+    }
+    .chart-container {
+        position: absolute;
+        width: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+#h-hand, #m-hand, #s-hand{
+    stroke:black;
+    stroke-linecap:round;
+}
+
+#h-hand{
+    stroke-width:6px;
+}
+
+#m-hand{
+    stroke-width:3px;
+}
+
+#s-hand{
+    stroke-width:1px;
 }
