@@ -12,6 +12,8 @@ catch(e)
 var noteTextarea = $('#note-textarea');
 var noteContent = '';
 
+$('#pause-record-btn').hide();
+
   /*-----------------------------
       Voice Recognition 
 ------------------------------*/
@@ -31,16 +33,6 @@ recognition.onresult = function(event) {
 
   // Get a transcript of what was said.
   var transcript = event.results[current][0].transcript;
-//   fetch('http://localhost:8080/test', {
-//     method: 'POST', // or 'PUT'
-//     body: JSON.stringify({transcript: transcript}), // data can be `string` or {object}!
-//     headers: {
-//       'Content-Type': 'application/json'
-//     },
-//     credentials: "same-origin"
-//   }).then(res => res.json())
-//   .catch(error => console.error('Error:', error))
-//   .then(response => console.log('Success:', response));
 
   // Add the current transcript to the contents of our Note.
   // There is a weird bug on mobile, where everything is repeated twice.
@@ -49,16 +41,28 @@ recognition.onresult = function(event) {
 
   if(!mobileRepeatBug) {
     noteContent += transcript;
-    noteTextarea.val(noteContent);
+    noteTextarea.html(noteContent);
   }
 };
 
-recognition.onstart = function() { 
-  console.log('Voice recognition activated. Try speaking into the microphone.');
+recognition.onstart = function() {
+  noteContent = '';
+  $('#start-record-btn').hide();
+  $('#pause-record-btn').show();
 }
 
 recognition.onspeechend = function() {
-  console.log('You were quiet for a while so voice recognition turned itself off.');
+  $('#start-record-btn').show();
+  $('#pause-record-btn').hide();
+  const data = {transcript: noteTextarea.html()};
+  $.post('/reminder-ai', data, function(reminder){
+    $('#textToSpeechClose').click();
+    clearAddReminderForm();
+    bindDataToAddReminderForm(reminder);
+    $('#addReminderBtn').click();
+  }).fail(function(error){
+    console.log(error);
+  })
 }
 
 recognition.onerror = function(event) {
@@ -76,6 +80,24 @@ $('#start-record-btn').on('click', function(e) {
   
   
 $('#pause-record-btn').on('click', function(e) {
-recognition.stop();
-console.log('Voice recognition paused.');
+  $('#start-record-btn').show();
+  $('#pause-record-btn').hide();
+  recognition.stop();
 });
+
+function bindDataToAddReminderForm(reminder) {
+  if (reminder.title) {
+    let title = reminder.title;
+    title = title.charAt(0).toUpperCase() + title.slice(1);
+    $('#title').val(title).trigger('change');
+  }
+  if (reminder.dueDate) {
+    $('#dueDate').datetimepicker('date', new Date(reminder.dueDate));
+    $('#dueDate')
+      .removeClass('datetimepicker-input')
+      .trigger('change')
+      .addClass('datetimepicker-input');
+    const DASHBOARD_DATA = getDashboardData();
+    DASHBOARD_DATA.addReminder.dueDate = reminder.dueDate;
+  }
+}

@@ -3,6 +3,12 @@ var router = express.Router();
 const passport = require('passport');
 const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
 const User = require('../models/user');
+const { Wit } = require('node-wit');
+const { WIT_TOKEN } = require('../config');
+
+const witClient = new Wit({
+    accessToken: WIT_TOKEN,
+});
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -50,6 +56,29 @@ router.put('/socketId', ensureLoggedIn(), (req, res) => {
     .catch(() => {
       res.status(500).json({ message: 'Internal server error' });
     })
+})
+
+router.post('/reminder-ai', ensureLoggedIn(), function(req, res){
+  witClient.message(req.body.transcript, {})
+    .then((data) => {
+      const reminder = {};
+      if (!data.entities.task ||
+          !data.entities.task.length ||
+          !(data.entities.task[0].confidence > 0.8)) {
+          res.status(200).json({message: 'Unable to interpret reminder'});
+      }
+
+      reminder.title = data.entities.task[0].value;
+
+      if (data.entities.datetime &&
+          data.entities.datetime.length &&
+          data.entities.datetime[0].confidence > 0.8) {
+          reminder.dueDate = data.entities.datetime[0].value;
+      }
+
+      res.status(200).json(reminder);
+    })
+    .catch(console.error);
 })
 
 module.exports = router;

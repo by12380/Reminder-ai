@@ -20,6 +20,10 @@ const DASHBOARD_DATA = {
     }
 }
 
+function getDashboardData() {
+    return DASHBOARD_DATA;
+}
+
 const progressAlertEnum = {
     0: 'On every 50% progress',
     1: 'On every 25% progress',
@@ -60,10 +64,14 @@ function initializeDateTimePicker() {
 
 function handleChangeOnAddReminder() {
     $("#dueDate").on("change.datetimepicker", function (e) {
-        DASHBOARD_DATA.addReminder.dueDate = e.date._d;
+        if (e.date) {
+            DASHBOARD_DATA.addReminder.dueDate = e.date._d;
+        }
     });
     $("#startDate").on("change.datetimepicker", function (e) {
-        DASHBOARD_DATA.addReminder.startDate = e.date._d;
+        if (e.date) {
+            DASHBOARD_DATA.addReminder.startDate = e.date._d;
+        }
         if ($(this).val()) {
             $('#alertFormGroup').show();
         }
@@ -358,6 +366,28 @@ function initializeSocketIO() {
 function initialzeHiddenElements() {
     $('#alertFormGroup').hide();
     $('#progressAlert').hide();
+}
+
+function clearAddReminderForm() {
+    DASHBOARD_DATA.addReminder.dueDate = null;
+    DASHBOARD_DATA.addReminder.startDate = null;
+
+    $('#title').val('').trigger('change');
+    $('#dueDate').datetimepicker('date', null);
+    $('#startDate').datetimepicker('date', null);
+    $('#dueDate')
+        .removeClass('datetimepicker-input')
+        .trigger('change')
+        .addClass('datetimepicker-input');
+    $('#startDate')
+        .removeClass('datetimepicker-input')
+        .trigger('change')
+        .addClass('datetimepicker-input');
+    $('#setAlert').prop('checked', false);
+    $('#progressAlert').val(0).trigger('change');;
+
+    $('#memo').val('').trigger('change');;
+    $('#emailNotification').prop('checked', false);
 }
 
 function initializeDashboard() {

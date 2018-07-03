@@ -95,3 +95,88 @@
 #s-hand{
     stroke-width:1px;
 }
+
+#speechToTextModal {
+    background-color: rgb(0,0,0, 0.7);
+}
+
+#speechToTextModal .modal-content {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+#start-record-btn, #pause-record-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#start-record-btn {
+    box-sizing: initial;
+    color: white;
+    font-size: 28px;
+    border: solid 2px;
+    padding: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#start-record-btn:hover {
+    padding: 15px;
+}
+
+#pause-record-btn {
+    box-sizing: initial;
+    color: white;
+    font-size: 36px;
+    border: solid 2px;
+    width: 37px;
+    height: 37px;
+    border-radius: 50%;
+    cursor: pointer;
+    animation-name: recording;
+    animation-duration: 0.6s;
+    animation-iteration-count: infinite;
+}
+
+#note-textarea {
+    font-size: 32px;
+    color: white;
+    padding: 10px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+@keyframes recording{
+    0% {
+        padding: 2px;
+    }
+    50% {
+        padding: 5px;
+    }
+    100% {
+        padding: 2px;
+    }
+}
+
+.record-btn-container {
+    position: relative;
+    height: 100px;
+    width: 100px;
+    display: inline-block;
+}
+
+.microphone-btn {
+    border-radius: 50%;
+    width: 46px;
+}
+
+.speech-to-text-close {
+    opacity: 1;
+    top: 20px;
+    right: 20px;
+}
