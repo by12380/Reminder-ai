@@ -256,6 +256,13 @@ function handleChangeOnAlertCheckBox() {
     })
 }
 
+function handleClickOnSpeechToTextButton() {
+    $('#speechToTextBtn').click(function(){
+        $('#start-record-btn').show();
+        $('#pause-record-btn').hide();
+    })
+}
+
 function renderRemindersPartialPage() {
     $.getJSON('/reminder', function(reminders){
         data = [
@@ -401,6 +408,7 @@ function initializeDashboard() {
     handleClickOnReminder();
     handleDeleteOnReminder();
     handleChangeOnAlertCheckBox();
+    handleClickOnSpeechToTextButton();
     renderRemindersPartialPage();
 }
 

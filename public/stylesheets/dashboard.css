@@ -1,3 +1,29 @@
+body, html {
+    height: 100%;
+}
+
+.bg {
+    /* The image used */
+    background-image:
+        linear-gradient(
+            rgb(255, 255, 255, 0.2),
+            rgb(255, 255, 255, 0.2)
+        ),
+        url("https://mdbootstrap.com/img/Photos/Horizontal/Nature/full page/img(20).jpg");
+
+    /* Full height */
+    height: 100%;
+
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+nav.default-color {
+    background-color: rgb(43, 187, 173, 0.7) !important;
+}
+
 .reminder-container {
     overflow: auto;
 }
@@ -68,7 +94,8 @@
 
 @media screen and (min-width: 768px) {
     .reminder-container {
-        height: 80vh;
+        height: 100vh;
+        padding-top: 80px;
     }
     .chart-container {
         position: absolute;
@@ -76,6 +103,12 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .chart-container {
+        margin-top: 80px;
     }
 }
 

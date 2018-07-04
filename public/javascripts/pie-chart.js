@@ -36,7 +36,7 @@ function renderPieChart() {
     const path = svg.datum(CHART_DATA).selectAll("path")
         .data(pie)
         .enter().append("path")
-        .attr("fill", function(d, i) { return ["red", "yellow", '#efefef'][i] })
+        .attr("fill", function(d, i) { return ["#dc3545", "#ffc107", '#efefef'][i] })
         .attr("d", arc)
         .each(function(d) { this._current = d; }); // store the initial angles
 
