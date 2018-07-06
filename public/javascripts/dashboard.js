@@ -359,7 +359,7 @@ function initializeSocketIO() {
     });
     socket.on('notification', function(notification){
         if (notification.display) {
-            const item = $(`<div class="notification animated fadeInRight alert alert-danger alert-dismissible">
+            const item = $(`<div class="notification animated fadeInLeft alert alert-danger alert-dismissible">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             <strong>Reminder: <span class="notification-title">${notification.title}</span></strong>
             <div class="notification-body">${notification.body}</div>

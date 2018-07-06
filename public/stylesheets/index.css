@@ -1,0 +1,71 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+}
+
+.logo {
+    font-size: 64px;
+    font-family: 'Comfortaa', cursive;
+}
+
+.intro {
+    font-family: 'Nunito', sans-serif;
+}
+
+.landing-page {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+}
+
+.tab-group .btn-outline-primary {
+    border: none !important;
+    box-shadow: none;
+}
+
+@media screen and (max-width: 768px) {
+    .logo {
+        font-size: 32px;
+    }
+}
+
+.feature-description {
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    color: #6d6d6d;
+}
+
+.red-status, .yellow-status, .white-status {
+    margin: 0;
+    font-size: 14px;
+    text-align: left;
+}
+
+.red-status::before, .yellow-status::before, .white-status::before {
+    content: '';
+    display: inline-block;
+    border-radius: 50%;
+    position: relative;
+    top: 2px;
+    left: 10px;
+    margin-right: 15px;
+    width: 14px;
+    height: 14px;
+}
+
+.red-status::before {
+    background-color: #dc3545;
+}
+
+.yellow-status::before {
+    background-color: #ffc107;
+}
+
+.white-status::before {
+    background-color: #efefef;
+}

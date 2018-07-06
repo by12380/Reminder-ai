@@ -52,7 +52,7 @@ nav.default-color {
     position: absolute;
     top: 20px;
     right: 20px;
-    z-index: 99;
+    z-index: 9999;
 }
 
 .notification-title {
