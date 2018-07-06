@@ -7,6 +7,7 @@ const flash = require('connect-flash');
 const passport = require('passport');
 const mongoose = require('mongoose');
 const fawn = require('fawn');
+const nodeCleanup = require('node-cleanup');
 
 mongoose.Promise = global.Promise;
 
@@ -121,6 +122,10 @@ function closeServer() {
 function getSocketIO() {
   return io;
 }
+
+nodeCleanup(function (exitCode, signal) {
+  notificationScheduler.removeAll();
+});
 
 // if server.js is called directly (aka, with `node server.js`), this block
 // runs. but we also export the runServer command so other code (for instance, test code) can start the server as needed.

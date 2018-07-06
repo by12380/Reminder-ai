@@ -48,10 +48,11 @@ const notificationScheduler = {
     },
     remove: function(id) {
         schedule.cancelJob(id);
+        console.log(`Canceled schedule: ${id}`);
     },
     removeAll: function(){
         for(let key in schedule.scheduledJobs){
-            schedule.scheduledJobs[key].cancel();
+            this.remove(key);
         }
     }
 }
