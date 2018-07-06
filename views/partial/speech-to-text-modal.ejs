@@ -1,6 +1,6 @@
 <!-- Modal -->
 <div class="modal fade" id="speechToTextModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <button id="textToSpeechClose" type="button" class="text-white close waves-effect waves-light speech-to-text-close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="text-white close waves-effect waves-light speech-to-text-close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
         </button>
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -9,12 +9,18 @@
                                 <div class="input-single">
                                         <div id="note-textarea"></div>
                                         </div>
-                                        <div class="record-btn-container">
+                                        <div class="record-btn-container mt-5">
                                                 <i id="start-record-btn" class="fa fa-microphone"></i>
                                                 <i id="pause-record-btn" class="fa fa-stop-circle-o"></i>
+                                                <i id="progress-spinner" class="fa fa-circle-o-notch" aria-hidden="true"></i>
                                         </div>
                                 </div>
-                                
+                                <div class="pt-5 px-2">
+                                        <p class="text-white text-left lead animated fadeIn">Say...</p>
+                                        <p class="text-white text-left pl-3 animated fadeInUp">Remind me to do homework at 5a.m. tomorrow</p>
+                                        <p class="text-white text-left pl-3 animated fadeInUp">Remind me to call John on December 25th</p>
+                                        <p class="text-white text-left pl-3 animated fadeInUp">Remind me that I have an appointment with Dr. Brown today at 2:45p.m.</p>
+                                </div>
                         </div>
         </div>
     

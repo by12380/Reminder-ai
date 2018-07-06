@@ -13,6 +13,7 @@ var noteTextarea = $('#note-textarea');
 var noteContent = '';
 
 $('#pause-record-btn').hide();
+$('#progress-spinner').hide();
 
   /*-----------------------------
       Voice Recognition 
@@ -52,15 +53,19 @@ recognition.onstart = function() {
 }
 
 recognition.onspeechend = function() {
-  $('#start-record-btn').show();
+  $('#progress-spinner').show();
   $('#pause-record-btn').hide();
   const data = {transcript: noteTextarea.html()};
   $.post('/reminder-ai', data, function(reminder){
-    $('#textToSpeechClose').click();
+    $('#progress-spinner').hide();
+    $('#start-record-btn').show();
+    $('#speechToTextModal').modal('hide');
     clearAddReminderForm();
     bindDataToAddReminderForm(reminder);
-    $('#addReminderBtn').click();
+    $('#modalAddReminderForm').modal('show');
   }).fail(function(error){
+    $('#progress-spinner').hide();
+    $('#start-record-btn').show();
     console.log(error);
   })
 }
@@ -80,7 +85,6 @@ $('#start-record-btn').on('click', function(e) {
   
   
 $('#pause-record-btn').on('click', function(e) {
-  $('#start-record-btn').show();
   $('#pause-record-btn').hide();
   recognition.stop();
 });
@@ -101,3 +105,7 @@ function bindDataToAddReminderForm(reminder) {
     DASHBOARD_DATA.addReminder.dueDate = reminder.dueDate;
   }
 }
+
+$('#speechToTextModal').on('hide.bs.modal', function(){
+  recognition.stop();
+})

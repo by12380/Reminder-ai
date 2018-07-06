@@ -1,0 +1,7 @@
+nav.default-color {
+    background-color: rgb(43, 187, 173, 0.7) !important;
+}
+
+nav .navbar-brand {
+    font-family: 'Comfortaa', cursive;
+}
