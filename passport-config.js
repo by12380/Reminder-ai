@@ -43,7 +43,7 @@ const initLocalLoginInAndRegisterStrategies = function (passport) {
           return done(null, false, { message: 'Name is required' });
         }
         email = email.toLowerCase();
-        name = name.trim();
+        name = req.body.name.trim();
         User.findOne({ 'local.email': email }, function(err, user) {
           if (err) { return done(err); }
           if (user) {
@@ -55,7 +55,7 @@ const initLocalLoginInAndRegisterStrategies = function (passport) {
           }
 
           const newUser = new User();
-          newUser.local.name = req.body.name;
+          newUser.local.name = name;
           newUser.local.email = email;
           newUser.local.password = newUser.hashPassword(password);
           newUser.save(function(err){
