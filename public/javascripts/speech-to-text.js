@@ -62,7 +62,7 @@ recognition.onspeechend = function() {
     $('#speechToTextModal').modal('hide');
     clearAddReminderForm();
     bindDataToAddReminderForm(reminder);
-    $('#modalAddReminderForm').modal('show');
+    $('#addReminderForm').submit();
   }).fail(function(error){
     $('#progress-spinner').hide();
     $('#start-record-btn').show();
@@ -90,6 +90,7 @@ $('#pause-record-btn').on('click', function(e) {
 });
 
 function bindDataToAddReminderForm(reminder) {
+  // console.log(reminder);
   if (reminder.title) {
     let title = reminder.title;
     title = title.charAt(0).toUpperCase() + title.slice(1);
@@ -103,6 +104,9 @@ function bindDataToAddReminderForm(reminder) {
       .addClass('datetimepicker-input');
     const DASHBOARD_DATA = getDashboardData();
     DASHBOARD_DATA.addReminder.dueDate = reminder.dueDate;
+  }
+  if (reminder.memo) {
+    $('#memo').val(reminder.memo).trigger('change');
   }
 }
 

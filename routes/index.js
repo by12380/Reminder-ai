@@ -62,18 +62,26 @@ router.post('/reminder-ai', ensureLoggedIn(), function(req, res){
   witClient.message(req.body.transcript, {})
     .then((data) => {
       const reminder = {};
+
       if (!data.entities.task ||
           !data.entities.task.length ||
           !(data.entities.task[0].confidence > 0.8)) {
-          res.status(200).json({message: 'Unable to interpret reminder'});
+          reminder.title = 'To do';
+          reminder.memo = data._text;
+      }
+      else {
+        reminder.title = data.entities.task[0].value;
       }
 
-      reminder.title = data.entities.task[0].value;
+      
 
       if (data.entities.datetime &&
           data.entities.datetime.length &&
           data.entities.datetime[0].confidence > 0.8) {
           reminder.dueDate = data.entities.datetime[0].value;
+      }
+      else {
+        reminder.dueDate = new Date();
       }
 
       res.status(200).json(reminder);
