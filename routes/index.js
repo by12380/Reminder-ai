@@ -81,7 +81,8 @@ router.post('/reminder-ai', ensureLoggedIn(), function(req, res){
           reminder.dueDate = data.entities.datetime[0].value;
       }
       else {
-        reminder.dueDate = new Date();
+        const date = new Date();
+        reminder.dueDate = date.setDate(date.getDate() + 1);
       }
 
       res.status(200).json(reminder);
