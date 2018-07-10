@@ -24,7 +24,7 @@ const notificationScheduler = {
             }
             const { getSocketIO } = require('./app');
             const io = getSocketIO();
-            console.log('email', receiverEmail);
+
             await User.findOne({'local.email': receiverEmail}).then((user) => {
                 if (io.sockets.connected[user.socketId]) {
                     io.sockets.connected[user.socketId]

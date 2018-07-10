@@ -9,6 +9,4 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-console.log(GMAIL_USERNAME);
-
 module.exports = { transporter };
