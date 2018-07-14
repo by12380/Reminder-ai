@@ -33,6 +33,7 @@ router.post('/', ensureLoggedIn(), function(req, res){
         emailNotification: req.body.emailNotification,
         user_id: req.user.id
     });
+
     const notifications = createNotifications(reminder, req);
 
     task.save('reminders', reminder);
@@ -98,7 +99,7 @@ router.put('/:id', ensureLoggedIn(), async function(req, res){
                 notification.title, notification.body, notification.userEmail
             );
         }
-        res.status(204).end()
+        res.status(201).json(newReminder);
     })
     .catch(err => {
         res.status(500).json({ message: 'Internal server error' });
