@@ -1,0 +1,10 @@
+language: node_js
+node_js: node
+services:
+- mongodb
+deploy:
+  provider: heroku
+  api_key: 624ad73c-2cd0-4a96-aae9-03fda51589b8
+  app: reminder-ai
+  on:
+    repo: by12380/Reminder-ai
