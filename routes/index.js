@@ -73,16 +73,14 @@ router.post('/reminder-ai', ensureLoggedIn(), function(req, res){
         reminder.title = data.entities.task[0].value;
       }
 
-      
-
       if (data.entities.datetime &&
           data.entities.datetime.length &&
-          data.entities.datetime[0].confidence > 0.8) {
+          data.entities.datetime[0].confidence > 0.8 &&
+          data.entities.datetime[0].type != 'interval') {
           reminder.dueDate = data.entities.datetime[0].value;
       }
       else {
-        const date = new Date();
-        reminder.dueDate = date.setDate(date.getDate() + 1);
+        reminder.dueDate = new Date();
       }
 
       res.status(200).json(reminder);
