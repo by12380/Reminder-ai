@@ -22,6 +22,17 @@ router.get('/', ensureLoggedIn(), function(req, res){
 
 router.post('/', ensureLoggedIn(), function(req, res){
 
+    //Default due date is now
+    if(!req.body.dueDate || !Date.parse(req.body.dueDate)) {
+        req.body.dueDate = new Date();
+    }
+
+    //Default start date is null if exists
+    if(req.body.startDate && !Date.parse(req.body.startDate)) {
+        req.body.startDate = null;
+    }
+
+
     const task = fawn.Task();
     const reminder = new Reminder({
         title: req.body.title,
@@ -59,6 +70,17 @@ router.post('/', ensureLoggedIn(), function(req, res){
 })
 
 router.put('/:id', ensureLoggedIn(), async function(req, res){
+
+    //Default due date is now
+    if(!req.body.dueDate || !Date.parse(req.body.dueDate)) {
+        req.body.dueDate = new Date();
+    }
+
+    //Default start date is null if exists
+    if(req.body.startDate && !Date.parse(req.body.startDate)) {
+        req.body.startDate = null;
+    }
+
     const reminder = await Reminder.findById(req.params.id);
     const notifications = await Notification.find({reminder_id: req.params.id});
 
