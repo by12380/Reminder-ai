@@ -168,6 +168,10 @@ JQuery / Md-Bootstrap / D3.js / Bootbox.js / Moment.js
 
 Express.js / Passport.js / Socket.io / Nodemailer / Node-schedule
 
+### Testing
+
+Chai / Mocha / Faker.js
+
 
 ## Powered By
 
