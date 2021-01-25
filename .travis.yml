@@ -4,7 +4,8 @@ services:
 - mongodb
 deploy:
   provider: heroku
-  api_key: 624ad73c-2cd0-4a96-aae9-03fda51589b8
+  api_key:
+    secure: silIFdfGhYUZ/csIS2yP1d1CzYzcrMR5FMeCja0J3Sv5K0rpJldHUlefsIFEqdk8rUsvYWJAJoztAAbzAGzUBtc0/0c8StsxUypgMsmOwlqshyTdpkgwBLVncxOsuy44wYHy7MMuR6z4dVeKqRLoE78cfXhACEdjHmdXTJnKJG9VUfMyOcWmiEImpqku2v/3c7/VQqDJae3KNzUlS3JwZpNZS/yHYwEcCB+bXWSmwJJJ46zIKOjxlMumrLslzHPo5PT9+UF9vlcFTdWgEJQL8JD8KIhHIW/Ifs73CbuKz4CweEfDtbtMWyvsBbwHlvYdrYjivN3Q9JZ9NoRpFnGe11a/3nU4bjmAXw0l6Zk+X0noBZU93Z3YrJ0fAR5CMrWJcepZYgz28zCHYlpS+8pYNbj3S68vnl4S2O8pu/iNNm3bMUh0zCQvK53r+B0FoN5tHgsUyYUlA87Wk4Kqma5JfxP2IcB6E+IWC3socM5QxjEXYDAHdE3eIIj5xH5HRcATtVSsLu6PLhuGiYJIKUwAOLNNS9uyvy7TGFbk+V5YQEq2+uhyYymyJVb0u6lXnnF0SKt0dP1tZ+3v1rG9Q8b7kEAygoGA/vNDT3K6tNTBkfym5A3gkchGKitc9letXNVTSadhhZe9nW0oVlhz9KRspP03MwiLbyAdKIDGgu/3doc=
   app: reminder-ai
   on:
     repo: by12380/Reminder-ai
