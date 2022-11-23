@@ -26,7 +26,7 @@
     "nodemailer": "^4.6.6",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
-    "socket.io": "^2.4.0"
+    "socket.io": "^2.5.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
